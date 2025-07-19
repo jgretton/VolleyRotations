@@ -12,7 +12,8 @@
     "motion": "^12.23.6",
     "next": "15.4.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

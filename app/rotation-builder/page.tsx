@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, PanInfo } from "motion/react";
+import YAML from "yaml";
 type BasePositions = {
 	[position: string]: {
 		x: number;
@@ -35,6 +36,10 @@ export default function Page() {
 
 	const [draggingPlayer, setDraggingPlayer] = useState<string | null>(null);
 
+	const [yamlData, setYamlData] = useState();
+
+	const [jsonData, setJsonData] = useState();
+
 	// Add back the mouse down handler
 	const handleMouseDown = (e: React.MouseEvent) => {
 		setDraggingPlayer(e.currentTarget.id);
@@ -45,6 +50,7 @@ export default function Page() {
 		info: PanInfo
 	) => {
 		if (!draggingPlayer) return; // Safety check
+		setYamlData(null);
 
 		const courtDimensions = courtRef.current?.getBoundingClientRect();
 		const offsetXPercent = (info.offset.x / courtDimensions.width) * 100;
@@ -61,6 +67,25 @@ export default function Page() {
 		});
 		setDraggingPlayer(null);
 	};
+
+	const handleConvertToYAML = () => {
+		const newStructure = {
+			positions: [],
+		};
+		Object.keys(playerPositions).map((position) => {
+			const data = {
+				role: position,
+				x: playerPositions[position].x,
+				y: playerPositions[position].y,
+			};
+			return newStructure.positions.push(data);
+		});
+
+		const YAMLfile = YAML.stringify(newStructure);
+		setYamlData(YAMLfile);
+		console.log(YAMLfile);
+	};
+
 	return (
 		<main className="min-h-screen max-w-7xl mx-auto px-4 ">
 			<section className="pt-20">
@@ -69,9 +94,9 @@ export default function Page() {
 				</h1>
 			</section>
 
-			<section className="mt-10 flex flex-row">
+			<section className="mt-10 flex md:flex-row flex-col">
 				{/* outer court */}
-				<div className="max-w-lg w-full aspect-square bg-amber-900/30 rounded-t-md mx-auto p-4 relative">
+				<div className="max-w-lg size-full aspect-square  bg-amber-900/30 rounded-t-md mx-auto p-4 relative shrink-0">
 					{/* net */}
 					<div className="absolute z-10 w-full h-6 top-0 bg-gray-300 left-0 rounded-md" />
 					{/* court */}
@@ -88,7 +113,7 @@ export default function Page() {
 							const y = `${playerPositions[position].y}%`;
 							return (
 								<motion.div
-									key={position}
+									key={`${position}-${playerPositions[position].x}-${playerPositions[position].y}`} //Forces rerender when resetting to base positions.
 									ref={(ref) => {
 										elem.current[index] = ref;
 									}}
@@ -109,14 +134,32 @@ export default function Page() {
 					</div>
 				</div>
 
-				<div className="">
-					{Object.keys(playerPositions).map((position) => (
-						<p key={position}>
-							{position} : (x:{playerPositions[position].x}, y:
-							{playerPositions[position].y})
-						</p>
-					))}
+				<div className="flex flex-col gap-5">
+					<button
+						className="py-2 px-3 rounded-md border border-gray-200 hover:bg-gray-100 cursor-pointer"
+						onClick={() => {
+							setPlayerPositions(BASE_POSITIONS);
+							setYamlData(null);
+						}}
+					>
+						Rest to base positions
+					</button>
+
+					<button onClick={handleConvertToYAML}>Convert to YAML</button>
+					<div className="flex flex-col max-w-sm">
+						<pre className="text-sm">{yamlData}</pre>
+					</div>
 				</div>
+			</section>
+			<section>
+				<button
+					onClick={() => {
+						setJsonData(YAML.parse(yamlData));
+					}}
+				>
+					Conver yaml to json
+				</button>
+				{/* {jsonData} */}
 			</section>
 		</main>
 	);
