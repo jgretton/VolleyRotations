@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-
+import { motion, PanInfo } from "motion/react";
 type BasePositions = {
 	[position: string]: {
 		x: number;
@@ -16,6 +16,7 @@ type BasePositions = {
 // 	OH2: { x: 215, y: 330 },
 // 	L: { x: 370, y: 330 },
 // };
+
 const BASE_POSITIONS: BasePositions = {
 	MB: { x: 14.37, y: 19.58 },
 	OH1: { x: 46.46, y: 19.58 },
@@ -31,31 +32,35 @@ export default function Page() {
 
 	const [playerPositions, setPlayerPositions] =
 		useState<BasePositions>(BASE_POSITIONS);
-	const [draggingPlayer, setDraggingPlayer] = useState<string | null>();
 
+	const [draggingPlayer, setDraggingPlayer] = useState<string | null>(null);
+
+	// Add back the mouse down handler
 	const handleMouseDown = (e: React.MouseEvent) => {
-		// console.log("mouse button", e.button);
-		// console.log("Mouse Position: X:", e.clientX, "Y:", e.clientY);
 		setDraggingPlayer(e.currentTarget.id);
 	};
 
-	const handleMouseMove = (e: React.MouseEvent) => {
-		if (draggingPlayer) {
-			const courtRect = courtRef.current?.getBoundingClientRect();
-			const relativeX = ((e.clientX - courtRect.left) / courtRect.width) * 100;
-			const relativeY = ((e.clientY - courtRect.top) / courtRect.height) * 100;
+	const handleDragEnd = (
+		e: MouseEvent | TouchEvent | PointerEvent,
+		info: PanInfo
+	) => {
+		if (!draggingPlayer) return; // Safety check
 
-			setPlayerPositions((prevState) => ({
+		const courtDimensions = courtRef.current?.getBoundingClientRect();
+		const offsetXPercent = (info.offset.x / courtDimensions.width) * 100;
+		const offsetYPercent = (info.offset.y / courtDimensions.height) * 100;
+
+		setPlayerPositions((prevState) => {
+			return {
 				...prevState,
-				[draggingPlayer]: { x: relativeX, y: relativeY },
-			}));
-		}
-	};
-
-	const handleMouseUp = (e: React.MouseEvent) => {
+				[draggingPlayer]: {
+					x: Number((prevState[draggingPlayer].x + offsetXPercent).toFixed(2)),
+					y: Number((prevState[draggingPlayer].y + offsetYPercent).toFixed(2)),
+				},
+			};
+		});
 		setDraggingPlayer(null);
 	};
-
 	return (
 		<main className="min-h-screen max-w-7xl mx-auto px-4 ">
 			<section className="pt-20">
@@ -64,9 +69,9 @@ export default function Page() {
 				</h1>
 			</section>
 
-			<section className="mt-10">
+			<section className="mt-10 flex flex-row">
 				{/* outer court */}
-				<div className="max-w-lg aspect-square bg-amber-900/30 rounded-t-md mx-auto p-4 relative">
+				<div className="max-w-lg w-full aspect-square bg-amber-900/30 rounded-t-md mx-auto p-4 relative">
 					{/* net */}
 					<div className="absolute z-10 w-full h-6 top-0 bg-gray-300 left-0 rounded-md" />
 					{/* court */}
@@ -82,23 +87,35 @@ export default function Page() {
 							const x = `${playerPositions[position].x}%`;
 							const y = `${playerPositions[position].y}%`;
 							return (
-								<div
+								<motion.div
 									key={position}
 									ref={(ref) => {
 										elem.current[index] = ref;
 									}}
-									onMouseDown={handleMouseDown}
-									onMouseMove={handleMouseMove}
-									onMouseUp={handleMouseUp}
 									id={position}
-									className="rounded-full size-12 bg-blue-200 grid place-items-center absolute"
-									style={{ top: y, left: x }}
+									className="rounded-full border size-12 bg-blue-200 grid place-items-center absolute cursor-grab"
+									drag
+									dragConstraints={courtRef}
+									whileTap={{ scale: 1.2, cursor: "grabbing" }}
+									dragMomentum={false}
+									onMouseDown={handleMouseDown}
+									onDragEnd={handleDragEnd}
+									initial={{ top: y, left: x }}
 								>
 									{position}
-								</div>
+								</motion.div>
 							);
 						})}
 					</div>
+				</div>
+
+				<div className="">
+					{Object.keys(playerPositions).map((position) => (
+						<p key={position}>
+							{position} : (x:{playerPositions[position].x}, y:
+							{playerPositions[position].y})
+						</p>
+					))}
 				</div>
 			</section>
 		</main>
