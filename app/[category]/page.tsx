@@ -24,7 +24,6 @@ export default async function Page(props: PageProps) {
 			<section className="w-full">
 				<ul className="flex flex-col md:flex-row">
 					{guides.map((guide) => {
-						console.log(guide);
 						return (
 							<li
 								key={guide.slug}
