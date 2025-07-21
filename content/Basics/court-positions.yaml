@@ -1,0 +1,39 @@
+---
+title: "Court Positions"
+description: "Complete 5-1 serve receive rotations and transitions"
+system: "Basic"
+phase: "serve-receive"
+difficulty: "intermediate"
+---
+content: |
+  The 5-1 serve receive system explanation...
+
+rotations:
+  rotation_1:
+    base:
+      positions:
+        - role: S
+          x: 78.75
+          y: 68.75
+        - role: OH1
+          x: 46.46
+          y: 19.58
+        # ... all 6 players
+    serve_receive:
+      positions:
+        - role: S
+          x: 85.0
+          y: 75.0
+        - role: OH1
+          x: 25.0
+          y: 45.0
+        # ... repositioned players
+      description: "Setter moves deeper, passers adjust..."
+
+  rotation_2:
+    base:
+      # base positions for rotation 2
+    serve_receive:
+      # serve receive positions for rotation 2
+
+  # ... rotation_3 through rotation_6
