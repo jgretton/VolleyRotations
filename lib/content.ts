@@ -6,11 +6,6 @@ import { GuideContent } from "@/types";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
-type Category = {
-	slug?: string;
-	data: object;
-	content: object;
-};
 type ReturnData = {
 	categories: string[];
 	content: {
@@ -60,7 +55,9 @@ export const getAllContent = (): ReturnData | null => {
 	return returnData;
 };
 
-export const getContentByCategory = (category: string): Category[] | null => {
+export const getContentByCategory = (
+	category: string
+): GuideContent[] | null => {
 	if (!category) return null;
 	const guidePath = path.join(contentDirectory, category);
 
@@ -84,7 +81,7 @@ export const getContentByCategory = (category: string): Category[] | null => {
 				slug,
 				content: YAMLfile,
 				...data,
-			} as Category;
+			} as GuideContent;
 		});
 };
 

@@ -3,12 +3,8 @@
 import { useRef, useState } from "react";
 import { motion, PanInfo } from "motion/react";
 import YAML from "yaml";
-type BasePositions = {
-	[position: string]: {
-		x: number;
-		y: number;
-	};
-};
+import { BasePositions, PositionData } from "@/types";
+
 // const BASE_POSITIONS: BasePositions = {
 // 	MB: { x: 61, y: 94 },
 // 	OH1: { x: 215, y: 94 },
@@ -36,7 +32,7 @@ export default function Page() {
 
 	const [draggingPlayer, setDraggingPlayer] = useState<string | null>(null);
 
-	const [yamlData, setYamlData] = useState();
+	const [yamlData, setYamlData] = useState<string | null>();
 
 	const [jsonData, setJsonData] = useState();
 
@@ -69,11 +65,11 @@ export default function Page() {
 	};
 
 	const handleConvertToYAML = () => {
-		const newStructure = {
+		const newStructure: { positions: PositionData[] } = {
 			positions: [],
 		};
 		Object.keys(playerPositions).map((position) => {
-			const data = {
+			const data: PositionData = {
 				role: position,
 				x: playerPositions[position].x,
 				y: playerPositions[position].y,
