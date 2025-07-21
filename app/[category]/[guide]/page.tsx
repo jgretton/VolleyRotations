@@ -1,4 +1,5 @@
 import Court from "@/app/components/Court";
+import CourtGridLines from "@/app/components/CourtGridLines";
 import PageHeader from "@/app/components/PageHeader";
 import { getGuideContent } from "@/lib/content";
 import { notFound } from "next/navigation";
@@ -29,7 +30,9 @@ export default async function Page(props: PageProps) {
 
 			<section className="bg-green-800/70 p-10">
 				<div className="max-w-lg">
-					<Court></Court>
+					<Court>
+						<CourtGridLines />
+					</Court>
 				</div>
 			</section>
 		</main>
