@@ -2,11 +2,12 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import YAML from "yaml";
+import { GuideContent } from "@/types";
 
 const contentDirectory = path.join(process.cwd(), "content");
 
 type Category = {
-	slug: string;
+	slug?: string;
 	data: object;
 	content: object;
 };
@@ -85,4 +86,28 @@ export const getContentByCategory = (category: string): Category[] | null => {
 				...data,
 			} as Category;
 		});
+};
+
+export const getGuideContent = (
+	guide: string,
+	category: string
+): GuideContent | null => {
+	const categoryPath = path.join(contentDirectory, category);
+
+	if (!fs.existsSync(categoryPath)) {
+		console.warn(`Directory ${categoryPath} does not exist`);
+		return null;
+	}
+
+	const fileName = `${guide}.yaml`;
+	const guidePath = path.join(categoryPath, fileName);
+
+	const guideFile = fs.readFileSync(guidePath, "utf-8");
+	const { data, content } = matter(guideFile);
+	const YAMLfile = YAML.parse(content);
+
+	return {
+		content: YAMLfile,
+		...data,
+	} as GuideContent;
 };

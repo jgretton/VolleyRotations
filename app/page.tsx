@@ -27,7 +27,7 @@ export default function Home() {
 								<h2 className="rounded-full py-3 px-6 text-lg/6 font-semibold text-black focus:outline-none bg-black/10 inline-block ">
 									{category}
 								</h2>
-								<ul className="flex flex-col md:flex-row p-3">
+								<ul className="flex flex-col md:flex-row p-3 gap-5">
 									{allContent.content[category].map((content) => {
 										return (
 											<li
